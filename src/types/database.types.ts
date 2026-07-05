@@ -1,6 +1,10 @@
 // Tipos escritos a mao para bater com supabase/schema.sql.
 // Se preferir, no futuro isso pode ser substituido por `supabase gen types typescript`,
 // mas isso exige a Supabase CLI autenticada — por enquanto mantido manual.
+//
+// Nota: cada tabela precisa do campo "Relationships" (mesmo vazio) porque a
+// biblioteca do Supabase usa essa chave internamente para resolver os tipos
+// de Insert/Update — sem ela, ela cai num tipo "never" e todo insert quebra.
 
 export type Json =
   | string
@@ -39,6 +43,7 @@ export interface Database {
           city: string;
         };
         Update: Partial<Database["public"]["Tables"]["profiles"]["Row"]>;
+        Relationships: [];
       };
       profile_photos: {
         Row: {
@@ -54,6 +59,7 @@ export interface Database {
           storage_path: string;
         };
         Update: Partial<Database["public"]["Tables"]["profile_photos"]["Row"]>;
+        Relationships: [];
       };
       recommendations: {
         Row: {
@@ -73,6 +79,7 @@ export interface Database {
           message: string;
         };
         Update: Partial<Database["public"]["Tables"]["recommendations"]["Row"]>;
+        Relationships: [];
       };
       likes: {
         Row: {
@@ -83,6 +90,7 @@ export interface Database {
         };
         Insert: { liker_id: string; liked_id: string };
         Update: never;
+        Relationships: [];
       };
       matches: {
         Row: {
@@ -93,6 +101,7 @@ export interface Database {
         };
         Insert: never;
         Update: never;
+        Relationships: [];
       };
       conversations: {
         Row: {
@@ -102,6 +111,7 @@ export interface Database {
         };
         Insert: never;
         Update: never;
+        Relationships: [];
       };
       messages: {
         Row: {
@@ -114,6 +124,7 @@ export interface Database {
         };
         Insert: { conversation_id: string; sender_id: string; content: string };
         Update: Partial<Database["public"]["Tables"]["messages"]["Row"]>;
+        Relationships: [];
       };
       blocked_users: {
         Row: {
@@ -124,6 +135,7 @@ export interface Database {
         };
         Insert: { blocker_id: string; blocked_id: string };
         Update: never;
+        Relationships: [];
       };
       reports: {
         Row: {
@@ -142,6 +154,7 @@ export interface Database {
           details?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["reports"]["Row"]>;
+        Relationships: [];
       };
       influencers: {
         Row: {
@@ -159,6 +172,7 @@ export interface Database {
           referral_code: string;
         };
         Update: Partial<Database["public"]["Tables"]["influencers"]["Row"]>;
+        Relationships: [];
       };
       subscriptions: {
         Row: {
@@ -178,6 +192,7 @@ export interface Database {
           price_cents: number;
         };
         Update: Partial<Database["public"]["Tables"]["subscriptions"]["Row"]>;
+        Relationships: [];
       };
       payments: {
         Row: {
@@ -195,6 +210,7 @@ export interface Database {
           amount_cents: number;
         };
         Update: Partial<Database["public"]["Tables"]["payments"]["Row"]>;
+        Relationships: [];
       };
       commissions: {
         Row: {
@@ -214,6 +230,7 @@ export interface Database {
           amount_cents: number;
         };
         Update: Partial<Database["public"]["Tables"]["commissions"]["Row"]>;
+        Relationships: [];
       };
       success_stories: {
         Row: {
@@ -224,6 +241,7 @@ export interface Database {
         };
         Insert: { match_id: string };
         Update: Partial<Database["public"]["Tables"]["success_stories"]["Row"]>;
+        Relationships: [];
       };
       success_story_confirmations: {
         Row: {
@@ -246,6 +264,7 @@ export interface Database {
         Update: Partial<
           Database["public"]["Tables"]["success_story_confirmations"]["Row"]
         >;
+        Relationships: [];
       };
       notifications: {
         Row: {
@@ -261,7 +280,12 @@ export interface Database {
           type: string;
         };
         Update: Partial<Database["public"]["Tables"]["notifications"]["Row"]>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
