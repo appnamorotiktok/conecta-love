@@ -1,5 +1,7 @@
 # ConectaLove — Fase 1
 
+Onboarding (formulário de perfil + upload de fotos) implementado.
+
 Esqueleto do projeto (Next.js + TypeScript + Tailwind + shadcn/ui + Supabase),
 schema do banco de dados e login funcionando. As demais telas estão como
 placeholder "Em construção", uma etapa por vez, conforme combinado.
