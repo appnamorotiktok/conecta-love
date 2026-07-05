@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 // Layout da área autenticada (/app/*): feed, matches, chat, perfil.
 // A verificação de login roda aqui (Server Component), nao em Middleware,
 // para evitar problemas de compatibilidade do cliente Supabase com o Edge Runtime.
-// PRÓXIMA ETAPA: navegação inferior (feed / matches / perfil), estilo Tinder.
+// O menu de navegação inferior fica no layout do grupo (main), não aqui,
+// porque a tela de chat não deve ter o menu cobrindo o campo de mensagem.
 export default async function AppLayout({
   children,
 }: {
