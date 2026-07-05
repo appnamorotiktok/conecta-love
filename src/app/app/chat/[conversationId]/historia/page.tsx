@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { HistoriaForm } from "./historia-form";
@@ -55,6 +56,12 @@ export default async function HistoriaPage({
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col px-4 py-6">
+      <Link
+        href={`/app/chat/${params.conversationId}`}
+        className="mb-2 text-sm text-muted-foreground"
+      >
+        ← Voltar para a conversa
+      </Link>
       <h1 className="text-lg font-bold text-primary">Somos um casal 💍</h1>
       <HistoriaForm
         matchId={match.id}

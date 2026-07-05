@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/logout-button";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { RecommendationActions } from "@/components/recommendation-actions";
+import { DeleteAccountButton } from "@/components/delete-account-button";
 
 function calculateAge(birthDate: string) {
   const birth = new Date(birthDate);
@@ -127,6 +128,10 @@ export default async function ProfilePage() {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="mt-10 border-t border-border pt-6">
+        <DeleteAccountButton />
       </div>
     </main>
   );
