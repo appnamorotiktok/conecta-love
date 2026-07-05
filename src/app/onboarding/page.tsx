@@ -1,15 +1,34 @@
-// PRÓXIMA ETAPA (Fase 1): formulário de criação de perfil (nome, idade, cidade,
-// sexo, orientação, objetivo, profissão, bio, upload de 3-4 fotos) gravando em
-// `profiles` + `profile_photos`, respeitando o limite de fotos do schema.
-export default function OnboardingPage() {
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { OnboardingForm } from "./onboarding-form";
+
+export default async function OnboardingPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (existingProfile) {
+    redirect("/app/feed");
+  }
+
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 text-center">
-      <div>
-        <h1 className="text-xl font-semibold">Complete seu perfil</h1>
-        <p className="mt-2 text-muted-foreground">
-          Em construção — próxima etapa do desenvolvimento.
-        </p>
-      </div>
+    <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-12">
+      <h1 className="text-2xl font-bold">Complete seu perfil</h1>
+      <p className="mt-1 text-muted-foreground">
+        Isso é o que as outras pessoas vão ver de você.
+      </p>
+      <OnboardingForm userId={user.id} />
     </main>
   );
 }
