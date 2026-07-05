@@ -1,8 +1,20 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
 // Painel do influenciador. PRÓXIMA ETAPA (Fase 1): assinantes atribuídos
 // (status ativo/atrasado/cancelado), comissão do mês e histórico de repasses —
 // dados lidos de `subscriptions` + `payments` + `commissions`, nunca digitados
 // à mão (transparência combinada com o usuário).
-export default function InfluencerDashboardPage() {
+export default async function InfluencerDashboardPage() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center px-6 text-center">
       <div>
