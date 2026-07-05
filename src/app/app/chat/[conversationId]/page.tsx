@@ -1,18 +1,71 @@
-// PRÓXIMA ETAPA (Fase 1): mensagens em tempo real via Supabase Realtime na
-// tabela `messages`, respeitando RLS (só participantes do match veem/enviam).
-export default function ChatPage({
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { ChatClient, type ChatMessage } from "./chat-client";
+
+export default async function ChatPage({
   params,
 }: {
   params: { conversationId: string };
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const { data: conversation } = await supabase
+    .from("conversations")
+    .select("id, match_id")
+    .eq("id", params.conversationId)
+    .maybeSingle();
+
+  if (!conversation) {
+    redirect("/app/matches");
+  }
+
+  const { data: match } = await supabase
+    .from("matches")
+    .select("id, user_a, user_b")
+    .eq("id", conversation.match_id)
+    .maybeSingle();
+
+  if (!match || (match.user_a !== user.id && match.user_b !== user.id)) {
+    redirect("/app/matches");
+  }
+
+  const otherUserId = match.user_a === user.id ? match.user_b : match.user_a;
+
+  const [{ data: otherProfile }, { data: otherPhoto }, { data: messages }] =
+    await Promise.all([
+      supabase.from("profiles").select("full_name").eq("id", otherUserId).maybeSingle(),
+      supabase
+        .from("profile_photos")
+        .select("storage_path")
+        .eq("profile_id", otherUserId)
+        .eq("is_primary", true)
+        .maybeSingle(),
+      supabase
+        .from("messages")
+        .select("id, conversation_id, sender_id, content, read_at, created_at")
+        .eq("conversation_id", conversation.id)
+        .order("created_at", { ascending: true }),
+    ]);
+
+  const otherPhotoUrl = otherPhoto
+    ? supabase.storage.from("profile-photos").getPublicUrl(otherPhoto.storage_path)
+        .data.publicUrl
+    : null;
+
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 text-center">
-      <div>
-        <h1 className="text-xl font-semibold">Conversa</h1>
-        <p className="mt-2 text-muted-foreground">
-          Em construção — próxima etapa do desenvolvimento.
-        </p>
-      </div>
-    </main>
+    <ChatClient
+      conversationId={conversation.id}
+      currentUserId={user.id}
+      otherUserName={otherProfile?.full_name ?? "Perfil"}
+      otherUserPhotoUrl={otherPhotoUrl}
+      initialMessages={(messages ?? []) as ChatMessage[]}
+    />
   );
 }
