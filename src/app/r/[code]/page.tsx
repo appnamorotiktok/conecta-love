@@ -12,10 +12,7 @@ export default async function ReferralLandingPage({
   const supabase = createClient();
 
   const { data: influencer } = await supabase
-    .from("public_influencer_lookup")
-    .select("id, name")
-    .eq("referral_code", params.code)
-    .eq("status", "active")
+    .rpc("get_influencer_by_referral_code", { code: params.code })
     .maybeSingle();
 
   if (!influencer) {

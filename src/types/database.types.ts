@@ -284,29 +284,24 @@ export interface Database {
         Relationships: [];
       };
     };
-    Views: {
-      public_profile_lookup: {
-        Row: {
-          id: string;
-          full_name: string;
-          invite_token: string;
-        };
-        Relationships: [];
-      };
-      public_influencer_lookup: {
-        Row: {
-          id: string;
-          name: string;
-          referral_code: string;
-          status: "active" | "paused";
-        };
-        Relationships: [];
-      };
-    };
+    Views: Record<string, never>;
     Functions: {
       delete_own_account: {
         Args: Record<PropertyKey, never>;
         Returns: undefined;
+      };
+      get_profile_by_invite_token: {
+        Args: { token: string };
+        Returns: { id: string; full_name: string }[];
+      };
+      get_influencer_by_referral_code: {
+        Args: { code: string };
+        Returns: {
+          id: string;
+          name: string;
+          referral_code: string;
+          status: "active" | "paused";
+        }[];
       };
     };
     Enums: Record<string, never>;

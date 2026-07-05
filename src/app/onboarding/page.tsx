@@ -27,10 +27,7 @@ export default async function OnboardingPage() {
   let influencerId: string | null = null;
   if (refCode) {
     const { data: influencer } = await supabase
-      .from("public_influencer_lookup")
-      .select("id")
-      .eq("referral_code", refCode)
-      .eq("status", "active")
+      .rpc("get_influencer_by_referral_code", { code: refCode })
       .maybeSingle();
     influencerId = influencer?.id ?? null;
   }
