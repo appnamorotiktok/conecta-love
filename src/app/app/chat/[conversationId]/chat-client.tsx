@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,22 +11,27 @@ import type { Database } from "@/types/database.types";
 
 export type ChatMessage = Database["public"]["Tables"]["messages"]["Row"];
 type MessageInsert = Database["public"]["Tables"]["messages"]["Insert"];
+type BlockInsert = Database["public"]["Tables"]["blocked_users"]["Insert"];
 
 export function ChatClient({
   conversationId,
   currentUserId,
+  otherUserId,
   otherUserName,
   otherUserPhotoUrl,
   initialMessages,
 }: {
   conversationId: string;
   currentUserId: string;
+  otherUserId: string;
   otherUserName: string;
   otherUserPhotoUrl: string | null;
   initialMessages: ChatMessage[];
 }) {
+  const router = useRouter();
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [text, setText] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -84,9 +90,32 @@ export function ChatClient({
     await supabase.from("messages").insert(payload);
   }
 
+  async function handleBlock() {
+    setMenuOpen(false);
+    const confirmed = window.confirm(
+      `Bloquear ${otherUserName}? Vocês não poderão mais trocar mensagens.`
+    );
+    if (!confirmed) return;
+
+    const supabase = createClient();
+    const payload: BlockInsert = {
+      blocker_id: currentUserId,
+      blocked_id: otherUserId,
+    };
+    const { error } = await supabase.from("blocked_users").insert(payload);
+
+    if (error) {
+      alert("Não foi possível bloquear: " + error.message);
+      return;
+    }
+
+    router.push("/app/matches");
+    router.refresh();
+  }
+
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col px-4 py-4">
-      <div className="mb-3 flex items-center gap-3 border-b border-border pb-3">
+      <div className="relative mb-3 flex items-center gap-3 border-b border-border pb-3">
         <Link href="/app/matches" className="text-muted-foreground">
           ←
         </Link>
@@ -101,6 +130,33 @@ export function ChatClient({
         >
           Somos um casal 💍
         </Link>
+        <button
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          className="px-1 text-lg text-muted-foreground"
+          aria-label="Mais opções"
+        >
+          ⋮
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 top-full z-10 mt-1 w-40 rounded-lg border border-border bg-card shadow-md">
+            <Link
+              href={`/app/chat/${conversationId}/denunciar`}
+              className="block px-3 py-2 text-sm hover:bg-secondary"
+              onClick={() => setMenuOpen(false)}
+            >
+              Denunciar
+            </Link>
+            <button
+              type="button"
+              onClick={handleBlock}
+              className="block w-full px-3 py-2 text-left text-sm text-destructive hover:bg-secondary"
+            >
+              Bloquear
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 space-y-2 overflow-y-auto py-2">

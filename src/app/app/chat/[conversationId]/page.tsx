@@ -63,6 +63,7 @@ export default async function ChatPage({
     <ChatClient
       conversationId={conversation.id}
       currentUserId={user.id}
+      otherUserId={otherUserId}
       otherUserName={otherProfile?.full_name ?? "Perfil"}
       otherUserPhotoUrl={otherPhotoUrl}
       initialMessages={(messages ?? []) as ChatMessage[]}

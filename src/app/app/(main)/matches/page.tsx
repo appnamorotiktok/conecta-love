@@ -12,12 +12,25 @@ export default async function MatchesPage() {
 
   if (!user) return null;
 
-  const { data: matches } = await supabase
-    .from("matches")
-    .select("id, user_a, user_b")
-    .or(`user_a.eq.${user.id},user_b.eq.${user.id}`);
+  const [{ data: matches }, { data: blockedByMe }, { data: blockedMe }] =
+    await Promise.all([
+      supabase
+        .from("matches")
+        .select("id, user_a, user_b")
+        .or(`user_a.eq.${user.id},user_b.eq.${user.id}`),
+      supabase.from("blocked_users").select("blocked_id").eq("blocker_id", user.id),
+      supabase.from("blocked_users").select("blocker_id").eq("blocked_id", user.id),
+    ]);
 
-  const matchList = matches ?? [];
+  const blockedIds = new Set<string>([
+    ...(blockedByMe ?? []).map((b) => b.blocked_id),
+    ...(blockedMe ?? []).map((b) => b.blocker_id),
+  ]);
+
+  const matchList = (matches ?? []).filter((m) => {
+    const otherId = m.user_a === user.id ? m.user_b : m.user_a;
+    return !blockedIds.has(otherId);
+  });
   const otherUserIds = matchList.map((m) =>
     m.user_a === user.id ? m.user_b : m.user_a
   );
