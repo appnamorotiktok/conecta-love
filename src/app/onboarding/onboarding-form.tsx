@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import type { Database } from "@/types/database.types";
+
+type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
+type PhotoInsert = Database["public"]["Tables"]["profile_photos"]["Insert"];
 
 const MAX_PHOTOS = 4;
 const selectClass =
@@ -55,7 +59,7 @@ export function OnboardingForm({ userId }: { userId: string }) {
     setLoading(true);
     const supabase = createClient();
 
-    const { error: profileError } = await supabase.from("profiles").insert({
+    const profilePayload: ProfileInsert = {
       id: userId,
       full_name: fullName,
       birth_date: birthDate,
@@ -65,7 +69,11 @@ export function OnboardingForm({ userId }: { userId: string }) {
       city,
       profession: profession || null,
       bio: bio || null,
-    });
+    };
+
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert(profilePayload);
 
     if (profileError) {
       setLoading(false);
@@ -87,14 +95,16 @@ export function OnboardingForm({ userId }: { userId: string }) {
         return;
       }
 
+      const photoPayload: PhotoInsert = {
+        profile_id: userId,
+        storage_path: path,
+        position: i + 1,
+        is_primary: i === 0,
+      };
+
       const { error: photoRowError } = await supabase
         .from("profile_photos")
-        .insert({
-          profile_id: userId,
-          storage_path: path,
-          position: i + 1,
-          is_primary: i === 0,
-        });
+        .insert(photoPayload);
 
       if (photoRowError) {
         setLoading(false);
