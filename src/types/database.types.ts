@@ -284,7 +284,16 @@ export interface Database {
         Relationships: [];
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      public_profile_lookup: {
+        Row: {
+          id: string;
+          full_name: string;
+          invite_token: string;
+        };
+        Relationships: [];
+      };
+    };
     Functions: {
       delete_own_account: {
         Args: Record<PropertyKey, never>;

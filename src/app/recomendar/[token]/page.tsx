@@ -10,7 +10,7 @@ export default async function RecommendPage({
   const supabase = createClient();
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("public_profile_lookup")
     .select("id, full_name")
     .eq("invite_token", params.token)
     .maybeSingle();
