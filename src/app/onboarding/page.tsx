@@ -27,7 +27,7 @@ export default async function OnboardingPage() {
   let influencerId: string | null = null;
   if (refCode) {
     const { data: influencer } = await supabase
-      .from("influencers")
+      .from("public_influencer_lookup")
       .select("id")
       .eq("referral_code", refCode)
       .eq("status", "active")

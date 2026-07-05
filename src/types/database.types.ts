@@ -293,6 +293,15 @@ export interface Database {
         };
         Relationships: [];
       };
+      public_influencer_lookup: {
+        Row: {
+          id: string;
+          name: string;
+          referral_code: string;
+          status: "active" | "paused";
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       delete_own_account: {

@@ -12,7 +12,7 @@ export default async function ReferralLandingPage({
   const supabase = createClient();
 
   const { data: influencer } = await supabase
-    .from("influencers")
+    .from("public_influencer_lookup")
     .select("id, name")
     .eq("referral_code", params.code)
     .eq("status", "active")

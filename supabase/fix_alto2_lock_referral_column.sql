@@ -1,0 +1,22 @@
+-- ============================================================
+-- ConectaLove — Correcao do Alto 2 da auditoria de seguranca
+-- ============================================================
+-- Rode isso no SQL Editor do Supabase.
+--
+-- Problema: a policy de update em "profiles" (auth.uid() = id) nao
+-- restringe quais colunas podem mudar. Isso permitia o proprio
+-- usuario alterar "referred_by_influencer_id" a qualquer momento
+-- via chamada direta a API, mudando pra qual influenciador a
+-- comissao dele seria atribuida.
+--
+-- Correcao: mesma tecnica ja usada no "is_admin" — trava a coluna
+-- por privilegio (nao so RLS), assim ninguem consegue mudar essa
+-- coluna via update, nem passando por fora do app.
+--
+-- Isso NAO afeta a gravacao inicial (insert) durante o cadastro —
+-- so bloqueia UPDATE depois que o perfil ja existe, que e exatamente
+-- o comportamento de "atribuicao permanente, gravada 1x" que o
+-- app sempre pretendeu ter.
+-- ============================================================
+
+revoke update (referred_by_influencer_id) on public.profiles from authenticated;
