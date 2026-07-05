@@ -22,7 +22,13 @@ function maxBirthDateFor18YearsOld() {
   return d.toISOString().split("T")[0];
 }
 
-export function OnboardingForm({ userId }: { userId: string }) {
+export function OnboardingForm({
+  userId,
+  influencerId,
+}: {
+  userId: string;
+  influencerId: string | null;
+}) {
   const router = useRouter();
 
   const [fullName, setFullName] = useState("");
@@ -69,6 +75,7 @@ export function OnboardingForm({ userId }: { userId: string }) {
       city,
       profession: profession || null,
       bio: bio || null,
+      referred_by_influencer_id: influencerId,
     };
 
     const { error: profileError } = await supabase

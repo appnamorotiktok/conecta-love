@@ -4,6 +4,8 @@ import { LogoutButton } from "@/components/logout-button";
 import { ReportActions } from "@/components/report-actions";
 import { DownloadImageButton } from "@/components/download-image-button";
 import { CopyTextButton } from "@/components/copy-text-button";
+import { CopyLinkButton } from "@/components/copy-link-button";
+import { AddInfluencerForm } from "@/components/add-influencer-form";
 
 // Admin mínimo da Fase 1: moderação de denúncias (`reports`) e lista de
 // usuários. Valores devidos a influenciadores entram quando o Asaas
@@ -28,7 +30,7 @@ export default async function AdminPage() {
     redirect("/app/feed");
   }
 
-  const [{ data: reports }, { data: users }, { data: stories }] =
+  const [{ data: reports }, { data: users }, { data: stories }, { data: influencers }] =
     await Promise.all([
       supabase
         .from("reports")
@@ -42,6 +44,10 @@ export default async function AdminPage() {
         .from("success_stories")
         .select("id")
         .eq("status", "ready_to_publish"),
+      supabase
+        .from("influencers")
+        .select("id, name, referral_code, commission_rate, status")
+        .order("created_at", { ascending: false }),
     ]);
 
   const nameById = new Map((users ?? []).map((u) => [u.id, u.full_name]));
@@ -162,6 +168,28 @@ export default async function AdminPage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="mt-8">
+        <h2 className="font-semibold">
+          Influenciadores ({(influencers ?? []).length})
+        </h2>
+        <div className="mt-2 flex flex-col gap-2">
+          {(influencers ?? []).map((inf) => (
+            <div key={inf.id} className="rounded-lg border border-border p-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">{inf.name}</span>
+                <span className="text-muted-foreground">
+                  {(inf.commission_rate * 100).toFixed(0)}% · {inf.status}
+                </span>
+              </div>
+              <CopyLinkButton
+                url={`${process.env.NEXT_PUBLIC_SITE_URL}/r/${inf.referral_code}`}
+              />
+            </div>
+          ))}
+        </div>
+        <AddInfluencerForm />
       </section>
 
       <section className="mt-8">
