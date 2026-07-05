@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/logout-button";
 import { ReportActions } from "@/components/report-actions";
+import { DownloadImageButton } from "@/components/download-image-button";
+import { CopyTextButton } from "@/components/copy-text-button";
 
 // Admin mínimo da Fase 1: moderação de denúncias (`reports`) e lista de
 // usuários. Valores devidos a influenciadores entram quando o Asaas
@@ -142,6 +144,17 @@ export default async function AdminPage() {
                           {c.testimonial}
                         </p>
                       )}
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {c.photo_storage_path && (
+                          <DownloadImageButton
+                            url={photoUrl(c.photo_storage_path)}
+                            filename={`historia-${nameById.get(c.profile_id) ?? c.profile_id}.jpg`}
+                          />
+                        )}
+                        {c.testimonial && (
+                          <CopyTextButton text={c.testimonial} />
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
