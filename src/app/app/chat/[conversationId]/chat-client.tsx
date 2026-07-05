@@ -94,7 +94,13 @@ export function ChatClient({
           <AvatarImage src={otherUserPhotoUrl ?? undefined} alt={otherUserName} />
           <AvatarFallback>{otherUserName.charAt(0)}</AvatarFallback>
         </Avatar>
-        <span className="font-semibold">{otherUserName}</span>
+        <span className="flex-1 font-semibold">{otherUserName}</span>
+        <Link
+          href={`/app/chat/${conversationId}/historia`}
+          className="text-xs text-primary underline underline-offset-2"
+        >
+          Somos um casal 💍
+        </Link>
       </div>
 
       <div className="flex-1 space-y-2 overflow-y-auto py-2">
