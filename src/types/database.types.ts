@@ -30,6 +30,7 @@ export interface Database {
           bio: string | null;
           invite_token: string;
           referred_by_influencer_id: string | null;
+          is_admin: boolean;
           created_at: string;
           updated_at: string;
         };
