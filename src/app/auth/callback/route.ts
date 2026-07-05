@@ -6,7 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/onboarding";
+  const rawNext = searchParams.get("next") ?? "/onboarding";
+  // so aceita caminho relativo interno, evitando que "next" vire redirect pra fora do site
+  const next =
+    rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/onboarding";
 
   if (code) {
     const supabase = createClient();
