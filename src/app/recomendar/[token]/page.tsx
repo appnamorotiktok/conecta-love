@@ -5,12 +5,13 @@ import { RecommendForm } from "./recommend-form";
 export default async function RecommendPage({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }) {
-  const supabase = createClient();
+  const { token } = await params;
+  const supabase = await createClient();
 
   const { data: profile } = await supabase
-    .rpc("get_profile_by_invite_token", { token: params.token })
+    .rpc("get_profile_by_invite_token", { token })
     .maybeSingle();
 
   if (!profile) {

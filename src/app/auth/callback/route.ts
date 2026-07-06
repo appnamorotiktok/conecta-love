@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/onboarding";
 
   if (code) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);

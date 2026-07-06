@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { OnboardingForm } from "./onboarding-form";
 
 export default async function OnboardingPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -23,7 +23,8 @@ export default async function OnboardingPage() {
     redirect("/app/feed");
   }
 
-  const refCode = cookies().get("ref_code")?.value;
+  const cookieStore = await cookies();
+  const refCode = cookieStore.get("ref_code")?.value;
   let influencerId: string | null = null;
   if (refCode) {
     const { data: influencer } = await supabase

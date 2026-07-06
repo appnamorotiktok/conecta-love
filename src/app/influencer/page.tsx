@@ -8,7 +8,7 @@ import { CopyLinkButton } from "@/components/copy-link-button";
 // quando a assinatura Premium via Asaas estiver integrada — por enquanto
 // as tabelas `subscriptions`/`payments`/`commissions` ficam vazias.
 export default async function InfluencerDashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

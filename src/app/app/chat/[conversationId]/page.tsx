@@ -5,9 +5,10 @@ import { ChatClient, type ChatMessage } from "./chat-client";
 export default async function ChatPage({
   params,
 }: {
-  params: { conversationId: string };
+  params: Promise<{ conversationId: string }>;
 }) {
-  const supabase = createClient();
+  const { conversationId } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -19,7 +20,7 @@ export default async function ChatPage({
   const { data: conversation } = await supabase
     .from("conversations")
     .select("id, match_id")
-    .eq("id", params.conversationId)
+    .eq("id", conversationId)
     .maybeSingle();
 
   if (!conversation) {

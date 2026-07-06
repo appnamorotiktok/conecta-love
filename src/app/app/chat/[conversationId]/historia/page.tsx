@@ -6,9 +6,10 @@ import { HistoriaForm } from "./historia-form";
 export default async function HistoriaPage({
   params,
 }: {
-  params: { conversationId: string };
+  params: Promise<{ conversationId: string }>;
 }) {
-  const supabase = createClient();
+  const { conversationId } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -20,7 +21,7 @@ export default async function HistoriaPage({
   const { data: conversation } = await supabase
     .from("conversations")
     .select("id, match_id")
-    .eq("id", params.conversationId)
+    .eq("id", conversationId)
     .maybeSingle();
 
   if (!conversation) {
@@ -57,7 +58,7 @@ export default async function HistoriaPage({
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col px-4 py-6">
       <Link
-        href={`/app/chat/${params.conversationId}`}
+        href={`/app/chat/${conversationId}`}
         className="mb-2 text-sm text-muted-foreground"
       >
         ← Voltar para a conversa

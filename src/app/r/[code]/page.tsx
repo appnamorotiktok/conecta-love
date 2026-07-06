@@ -7,12 +7,13 @@ import { SetReferralCookie } from "./set-referral-cookie";
 export default async function ReferralLandingPage({
   params,
 }: {
-  params: { code: string };
+  params: Promise<{ code: string }>;
 }) {
-  const supabase = createClient();
+  const { code } = await params;
+  const supabase = await createClient();
 
   const { data: influencer } = await supabase
-    .rpc("get_influencer_by_referral_code", { code: params.code })
+    .rpc("get_influencer_by_referral_code", { code })
     .maybeSingle();
 
   if (!influencer) {
@@ -21,7 +22,7 @@ export default async function ReferralLandingPage({
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center">
-      <SetReferralCookie code={params.code} />
+      <SetReferralCookie code={code} />
       <span className="text-sm font-medium text-primary">ConectaLove</span>
       <h1 className="mt-2 text-2xl font-bold">
         Você foi convidado(a) por {influencer.name}

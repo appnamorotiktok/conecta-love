@@ -14,7 +14,7 @@ function calculateAge(birthDate: string) {
 }
 
 export default async function FeedPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
