@@ -1,8 +1,6 @@
-// CSP em modo "somente relatorio" por enquanto: nao bloqueia nada, so avisa
-// no console do navegador o que seria bloqueado. Depois de confirmar que o
-// app inteiro funciona sem nenhum aviso de violacao, trocar o nome do header
-// abaixo de "Content-Security-Policy-Report-Only" para "Content-Security-Policy"
-// pra ativar de verdade.
+// CSP ativo de verdade — testado em modo "somente relatorio" antes (sem
+// nenhum aviso de violacao apos testar login, feed, chat, admin, influenciador,
+// bloqueio/denuncia, links de convite), agora bloqueando de fato.
 const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
@@ -37,7 +35,7 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
-          { key: "Content-Security-Policy-Report-Only", value: csp },
+          { key: "Content-Security-Policy", value: csp },
         ],
       },
     ];
